@@ -5,5 +5,6 @@ from . import views
 
 urlpatterns = [
     path('', views.get_books, name='get_all_book'),
-    path('book/<int:id>', views.get_by_id, name='get_by_id')
+    path('book/<int:id>', views.get_by_id, name='get_by_id'),
+    path('data/', views.book_manager)
 ]
