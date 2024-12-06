@@ -32,7 +32,7 @@ def get_by_id(request, id):
         serializer = BookSerializer(book)
         return Response(serializer.data)
     
-@api_view(['GET','POST'])
+@api_view(['GET','POST','PUT'])
 def book_manager(request):
 
     if request.method == 'GET':
@@ -64,7 +64,7 @@ def book_manager(request):
         return Response(serializer.data)
 
 
-# Criando dados de livros
+# Criar dados de livros
     if request.method == 'POST':
 
         new_book_data = request.data
@@ -77,3 +77,28 @@ def book_manager(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else: 
             return Response(status=status.HTTP_400_BAD_REQUEST)
+        
+
+ # Editar dados de livros
+    if request.method == 'PUT':
+        
+        # Captura o valor da chave titulo do livro que quero editar do corpo do request 
+        title = request.data.get("book_title")
+
+        if not title:
+            return Response({"error": "O campo 'book_title' é obrigatório."}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            try:
+                # Captura objeto livro que possui esse titulo no banco de dados
+                update_book = Book.objects.get(book_title=title)
+            except:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+            
+            # Objeto update_book sera editado e coloca os novos dados de request.data 
+            serializer = BookSerializer(update_book, data=request.data)
+
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+            else:
+                return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
