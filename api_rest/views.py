@@ -32,8 +32,9 @@ def get_by_id(request, id):
         serializer = BookSerializer(book)
         return Response(serializer.data)
     
-@api_view(['GET'])
+@api_view(['GET','POST'])
 def book_manager(request):
+
     if request.method == 'GET':
         # Verifica se o parametro title foi enviado
         book_title = request.GET.get('title', None)
@@ -61,3 +62,18 @@ def book_manager(request):
         # Serializar e retorna os dados do livro
         serializer = BookSerializer(book)
         return Response(serializer.data)
+
+
+# Criando dados de livros
+    if request.method == 'POST':
+
+        new_book_data = request.data
+
+        # Está serializando um dado, em vez de objeto
+        serializer = BookSerializer(data=new_book_data)
+
+        if serializer.is_valid():
+            serializer.save() # Salva no banco de dados
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else: 
+            return Response(status=status.HTTP_400_BAD_REQUEST)
