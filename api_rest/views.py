@@ -25,12 +25,12 @@ def get_books(request):
 def get_by_id(request, id):
     try:
         book = Book.objects.get(pk=id)
-    except:
+    except Book.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
         serializer = BookSerializer(book)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
 @api_view(['GET','POST','PUT'])
 def book_manager(request):

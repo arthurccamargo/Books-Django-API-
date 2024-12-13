@@ -2,7 +2,7 @@ from django.db import models
 
 # Create your models here.
 class Book(models.Model):
-    book_id = models.AutoField(primary_key=True)  # Gerado automaticamente
+    id = models.AutoField(primary_key=True)  # Django gera IDs unicos
     book_title = models.CharField(max_length=100, default='', unique=True)
     book_authors = models.CharField(max_length=150, default='')
     book_description = models.TextField(default='')
