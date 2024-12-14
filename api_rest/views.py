@@ -21,7 +21,7 @@ def get_books(request):
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET'])
+@api_view(['GET', 'PUT'])
 def get_by_id(request, id):
     try:
         book = Book.objects.get(pk=id)
@@ -31,6 +31,16 @@ def get_by_id(request, id):
     if request.method == 'GET':
         serializer = BookSerializer(book)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    if request.method == 'PUT':
+        serializer = BookSerializer(book, data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
     
 @api_view(['GET','POST','PUT'])
 def book_manager(request):
