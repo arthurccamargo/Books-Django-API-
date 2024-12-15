@@ -21,7 +21,7 @@ def get_books(request):
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET', 'PUT'])
+@api_view(['GET', 'PUT', 'DELETE'])
 def get_by_id(request, id):
     try:
         book = Book.objects.get(pk=id)
@@ -40,6 +40,12 @@ def get_by_id(request, id):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
+    if request.method == 'DELETE':
+        try:
+            book.delete()
+            return Response(status=status.HTTP_202_ACCEPTED)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
     
 @api_view(['GET','POST','PUT'])
