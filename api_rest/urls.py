@@ -4,7 +4,6 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.get_books, name='get_all_book'),
-    path('book/<int:id>', views.get_by_id, name='get_by_id'),
-    path('data/', views.book_manager)
+    path('books/', views.book_list, name='book_list'),
+    path('data/<int:id>', views.book_manager, name='book_manager')
 ]

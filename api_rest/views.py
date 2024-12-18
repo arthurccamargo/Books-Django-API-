@@ -1,6 +1,3 @@
-from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
-
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -8,21 +5,32 @@ from rest_framework import status
 from .models import Book
 from .serializers import BookSerializer
 
-import json
-
 # Create your views here.
-@api_view(['GET'])
-def get_books(request):
+@api_view(['GET','POST'])
+def book_list(request):
+    # Listagem de livros
     if request.method == 'GET':
         book = Book.objects.all()
         serializer = BookSerializer(book, many= True)
         return Response(serializer.data)
     
+     # Criar dados de livros
+    if request.method == 'POST':
+        new_book_data = request.data
+        # Está serializando um dado, em vez de objeto
+        serializer = BookSerializer(data=new_book_data)
+
+        if serializer.is_valid():
+            serializer.save() # Salva no banco de dados
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else: 
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+    
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET', 'PUT', 'DELETE'])
-def get_by_id(request, id):
+@api_view(['GET', 'PUT','DELETE'])
+def book_manager(request, id):
     try:
         book = Book.objects.get(pk=id)
     except Book.DoesNotExist:
@@ -40,57 +48,10 @@ def get_by_id(request, id):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
+    # Deletar livros
     if request.method == 'DELETE':
         try:
             book.delete()
             return Response(status=status.HTTP_202_ACCEPTED)
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    
-@api_view(['GET','POST','PUT'])
-def book_manager(request):
-
-    if request.method == 'GET':
-        # Verifica se o parametro title foi enviado
-        book_title = request.GET.get('title', None)
-
-        if not book_title:
-            return Response(
-                    {"error": "O parametro title é obrigatório"},
-                    status=status.HTTP_400_BAD_REQUEST
-            )
-    
-        try:
-            # Buscar o livro pelo titulo
-            book = Book.objects.get(book_title=book_title) 
-        except Book.DoesNotExist:
-            return Response(
-                {"error": "Livro não encontrado."},
-                status=status.HTTP_404_NOT_FOUND # Nao encontrou o objeto
-                ) 
-        except Exception as e:
-            return Response(
-                {"error": f"Ocorreu um erro: {str(e)}"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
-
-        # Serializar e retorna os dados do livro
-        serializer = BookSerializer(book)
-        return Response(serializer.data)
-
-
-# Criar dados de livros
-    if request.method == 'POST':
-
-        new_book_data = request.data
-
-        # Está serializando um dado, em vez de objeto
-        serializer = BookSerializer(data=new_book_data)
-
-        if serializer.is_valid():
-            serializer.save() # Salva no banco de dados
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else: 
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
