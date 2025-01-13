@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'api_rest',
+    'drf_spectacular',
 ]
 
 MIDDLEWARE = [
@@ -132,3 +133,17 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_ORIGINS = [
     'http://localhost:8080',
 ]
+
+# Ddocumentação OpenAPI (Swagger) 
+# Configure o DRF
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+# Configure as opções do Spectacular
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'api_rest',
+    'DESCRIPTION': 'api de livros',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
