@@ -1,14 +1,10 @@
 import requests
 from api_rest.models import Book
 from api_rest.serializers import BookSerializer
-import logging
-
-logger = logging.getLogger(__name__)
 
 # Busca livros na API do Google Books com base no termo de busca.
+# Livros só serão salvos se todos os atributos exigidos pelo modelo estiverem presentes e válidos.
 def fetch_books_from_google(query):
-    logger.info(f"Iniciando busca por livros com o termo: {query}")
-    
     url = "https://www.googleapis.com/books/v1/volumes"
     params = {
         'q': query,  # Termo de busca
@@ -30,17 +26,22 @@ def save_books_to_db(query):
     created_books = []
 
     for book in books_data:
-        # Extrair os dados relevantes de cada livro retornado pela API
+        # Verificar se 'selfLink' existe no objeto
+        if 'selfLink' not in book:
+            continue
+
         volume_info = book.get('volumeInfo', {})
+
+        # Extrair os dados necessários
         new_book_data = {
-            'book_title': volume_info.get('title', 'Sem título'),
+            'book_title': volume_info.get('title'),
             'book_authors': ', '.join(volume_info.get('authors', [])),
-            'book_description': volume_info.get('description', 'Sem descrição'),
-            'book_selfLink': book.get('selfLink', None),
+            'book_description': volume_info.get('description'),
+            'book_selfLink': book.get('selfLink'),
         }
 
-        # Verificar se o livro possui selfLink e se já existe no banco com base no selfLink
-        if new_book_data['selfLink'] and not Book.objects.filter(selfLink=new_book_data['selfLink']).exists():
+        # Verificar se todos os campos necessários estão presentes
+        if all(new_book_data.values()) and not Book.objects.filter(book_selfLink=new_book_data['book_selfLink']).exists():
             serializer = BookSerializer(data=new_book_data)
             if serializer.is_valid():
                 created_book = serializer.save()

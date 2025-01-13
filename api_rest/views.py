@@ -18,7 +18,7 @@ class BookViewSet(viewsets.ViewSet):
         description="Retorna uma lista de todos os livros cadastrados",
         responses={200: BookSerializer(many=True)}
     )
-    def list(self):
+    def list(self, request):
         books = Book.objects.all()
         serializer = BookSerializer(books, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -52,7 +52,7 @@ class BookViewSet(viewsets.ViewSet):
         description="Retorna os detalhes de um livro específico",
         responses={200: BookSerializer, 404: None}
     )
-    def retrieve(self, pk=None):
+    def retrieve(self, request,pk=None):
         try:
             book = Book.objects.get(pk=pk)
         except Book.DoesNotExist:
@@ -82,7 +82,7 @@ class BookViewSet(viewsets.ViewSet):
         description="Remove um livro do sistema",
         responses={204: None, 404: None}
     )
-    def destroy(self, pk=None):
+    def destroy(self, request,pk=None):
         try:
             book = Book.objects.get(pk=pk)
         except Book.DoesNotExist:
