@@ -12,7 +12,7 @@ def book_list(request):
     if request.method == 'GET':
         book = Book.objects.all()
         serializer = BookSerializer(book, many= True)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
      # Criar dados de livros
     if request.method == 'POST':
@@ -23,10 +23,7 @@ def book_list(request):
         if serializer.is_valid():
             serializer.save() # Salva no banco de dados
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else: 
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-    
-    return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET', 'PUT','DELETE'])
@@ -46,12 +43,12 @@ def book_manager(request, id):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
     # Deletar livros
     if request.method == 'DELETE':
         try:
             book.delete()
-            return Response(status=status.HTTP_202_ACCEPTED)
+            return Response(status=status.HTTP_204_NO_CONTENT)
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
