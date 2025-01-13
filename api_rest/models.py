@@ -10,4 +10,3 @@ class Book(models.Model):
 
     def __str__(self) -> str:   
         return f'Title: {self.book_title} | Authors: {self.book_authors}'
-a
