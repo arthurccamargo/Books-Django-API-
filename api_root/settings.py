@@ -146,4 +146,12 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'api de livros',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
+    # Configurações adicionais para melhorar a documentação
+    'COMPONENT_SPLIT_REQUEST': True,
+    'SCHEMA_PATH_PREFIX': r'/api/',
+    'SWAGGER_UI_SETTINGS': {
+        'deepLinking': True,
+        'persistAuthorization': True,
+        'displayRequestDuration': True,
+    }
 }
