@@ -5,6 +5,8 @@ from drf_spectacular.utils import extend_schema, OpenApiExample
 from .models import Book
 from .serializers import BookSerializer
 
+from .services.google_books import save_books_to_db
+
 # ViewSet para o modelo Book
 @extend_schema(tags=["books"])
 class BookViewSet(viewsets.ViewSet):
@@ -87,4 +89,34 @@ class BookViewSet(viewsets.ViewSet):
             return Response(status=status.HTTP_404_NOT_FOUND)
         book.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    @extend_schema(
+        summary="Busca livros na API do Google Books e preenche o banco de dados",
+        description="Busca livros com base no termo fornecido, salva os resultados no banco e retorna os livros salvos.",
+        parameters=[
+            {
+                'name': 'q',
+                'description': 'Termo de busca',
+                'required': True,
+                'type': 'string',
+                'in': 'query'
+            }
+        ],
+        responses={201: BookSerializer(many=True), 400: None}
+    )
+    @action(detail=False, methods=['get'])
+    def fetch_and_save_books(self, request):
+        query = request.query_params.get('q')
+        if not query:
+            return Response({'error': 'O parâmetro "q" é obrigatório.'}, status=status.HTTP_400_BAD_REQUEST)
 
+        try:
+            # Chamar o serviço para buscar e salvar os livros
+            created_books = save_books_to_db(query)
+
+            # Serializar e retornar os livros criados
+            response_serializer = BookSerializer(created_books, many=True)
+            return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
