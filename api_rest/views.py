@@ -4,16 +4,19 @@ from rest_framework.decorators import action
 from drf_spectacular.utils import extend_schema, OpenApiExample
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.exceptions import ValidationError
-from .models import Book
-from .models import Rating
-from .serializers import BookSerializer
-from .serializers import RatingSerializer
-
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from .models import Book, Rating
+from .serializers import BookSerializer, RatingSerializer
 from .services.google_books import save_books_to_db
 
 # ViewSet para o modelo Book
 @extend_schema(tags=["books"])
 class BookViewSet(viewsets.ViewSet):
+    # Sobreescrevendo método get_permissions de ViewSet
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return [AllowAny()]
+        return [IsAuthenticated()]
     """
     ViewSet para gerenciar livros.
     """
@@ -135,6 +138,12 @@ class BookViewSet(viewsets.ViewSet):
 class RatingViewSet(viewsets.ModelViewSet):
     queryset = Rating.objects.all()
     serializer_class = RatingSerializer
+
+    # Sobreescrevendo método get_permissions no ViewSet
+    def get_permissions(self):
+        if self.action in ['list', 'get_queryset', 'retrieve']:
+            return [AllowAny()] # Permite acesso público para listar ou visualizar avaliações
+        return [IsAuthenticated()] # Requer autenticação para as demais ações
 
     @extend_schema(
         summary="Cria uma nova avaliação",
