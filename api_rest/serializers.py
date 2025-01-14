@@ -12,6 +12,7 @@ class BookSerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
         fields = '__all__' # api vai devolver todos os campos
+        
     """
     aggregate() retorna um dicionário, o nome da chave no dicionário segue o padrão <field_name>__<aggregation_function>. Assim, o campo é score e a função é Avg, 
     então a chave é score__avg
