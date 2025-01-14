@@ -2,6 +2,7 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from drf_spectacular.utils import extend_schema, OpenApiExample
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.exceptions import ValidationError
 from .models import Book
 from .models import Rating
@@ -23,8 +24,12 @@ class BookViewSet(viewsets.ViewSet):
     )
     def list(self, request):
         books = Book.objects.all()
-        serializer = BookSerializer(books, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        paginator = PageNumberPagination()
+        # Divide o conjunto de dados de acordo com o número de itens por página definido na classe BookPagination
+        paginated_books = paginator.paginate_queryset(books, request)
+        # Os registros da página solicitada são serializados
+        serializer = BookSerializer(paginated_books, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
     @extend_schema(
         summary="Cria um novo livro",
@@ -221,10 +226,17 @@ class RatingViewSet(viewsets.ModelViewSet):
     )
     def list(self, request, *args, **kwargs):
         """
-        Lista as avaliações, permitindo filtrar pelo título e autor do livro.
+        Lista as avaliações com paginação, permitindo filtrar pelo título e autor do livro.
         """
         queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
+        # Paginador padrão do DRF
+        page = self.paginate_queryset(queryset) # dividi o queryset em páginas
+        if page is not None:
+            serializer = RatingSerializer(page, many=True) # serializa apenas os itens daquela página
+            return self.get_paginated_response(serializer.data) # resposta paginada
+
+        # Caso não exista paginação, retorne todos os itens
+        serializer = RatingSerializer(queryset, many=True)
         return Response(serializer.data)
 
     @extend_schema(

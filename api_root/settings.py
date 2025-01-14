@@ -134,11 +134,15 @@ CORS_ALLOW_ORIGINS = [
     'http://localhost:8080',
 ]
 
-# Ddocumentação OpenAPI (Swagger) 
 # Configure o DRF
 REST_FRAMEWORK = {
+    # Documentação OpenAPI (Swagger)
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    # Paginação
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 2
 }
+
 
 # Configure as opções do Spectacular
 SPECTACULAR_SETTINGS = {
