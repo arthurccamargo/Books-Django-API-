@@ -16,10 +16,11 @@ class Book(models.Model):
     controlam o comportamento e as regras aplicadas ao modelo no banco de dados ou na aplicação
     """
     class Meta:
+        ordering = ['id']  # para não causar resultados inconsistentes na paginação
         constraints = [
             # Garante unicidade de título + autor
             models.UniqueConstraint(fields=['book_title', 'book_authors'], name='unique_book_title_author')
-        ] 
+        ]
 
     def __str__(self) -> str:   
         return f'Title: {self.book_title} | Authors: {self.book_authors}'
@@ -32,6 +33,9 @@ class Rating(models.Model):
     )
     comment = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']  # ordenar por data de criação, mais recente primeiro
 
     def __str__(self) -> str:   
         return f'Book: {self.book} | Score: {self.score}'
