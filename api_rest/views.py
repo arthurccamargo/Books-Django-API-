@@ -8,6 +8,8 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import Book, Rating
 from .serializers import BookSerializer, RatingSerializer
 from .services.google_books import save_books_to_db
+from django.shortcuts import render
+from .export_utils import export_books_csv, export_ratings_csv
 
 # ViewSet para o modelo Book
 @extend_schema(tags=["books"])
@@ -258,3 +260,9 @@ class RatingViewSet(viewsets.ModelViewSet):
         Sobrescreve o método destroy para garantir uma resposta consistente.
         """
         return super().destroy(request, *args, **kwargs)
+    
+def export_books_view(request):
+    return export_books_csv()
+
+def export_ratings_view(request):
+    return export_ratings_csv()
