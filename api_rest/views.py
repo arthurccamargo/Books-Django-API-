@@ -117,6 +117,8 @@ class BookViewSet(viewsets.ViewSet):
         ],
         responses={201: BookSerializer(many=True), 400: None}
     )
+
+    # http://127.0.0.1:8000/api/books/fetch_and_save_books/?q=aventura - exemplo de uso
     @action(detail=False, methods=['get'])
     def fetch_and_save_books(self, request):
         query = request.query_params.get('q')
