@@ -56,6 +56,47 @@ A **Book API** é uma API RESTful desenvolvida em Django REST Framework para ger
 - Git
 - Virtualenv
 
+### Passos
+
+1. **Clone o repositório**:
+
+   ```bash
+   git clone https://github.com/arthurccamargo/Books-Django-API-/
+   cd Books-Django-API-
+   ```
+
+2. **Crie e ative um ambiente virtual**:
+
+   ```bash
+   python -m venv venv
+   source venv/bin/activate   # No Windows: venv\Scripts\activate
+   ```
+
+3. **Instale as dependências**:
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Configure o banco de dados**:
+
+   ```bash
+   python manage.py migrate
+   ```
+
+5. **Crie um superusuário (opcional, para acessar o admin)**:
+
+   ```bash
+   python manage.py createsuperuser
+   ```
+
+6. **Inicie o servidor**:
+
+   ```bash
+   python manage.py runserver
+   ```
+
+---
 ## Utilização
 
 ### Endpoints Principais
@@ -79,7 +120,8 @@ A **Book API** é uma API RESTful desenvolvida em Django REST Framework para ger
 
 ### Documentação Swagger
 
-- Acesse a documentação no navegador: `http://127.0.0.1:8000/api/docs/`
+- **Swagger**: `http://127.0.0.1:8000/api/docs/`
+- **Redoc**: `http://127.0.0.1:8000/api/redoc/`
 
 ---
 
